@@ -1,0 +1,109 @@
+# Variables
+x = []
+y = []
+i = 0
+x_win = False
+y_win = False
+game_field = [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
+start_input = "         "
+x_or_o = 0
+win_status = ""
+
+
+# Prints current state of game
+def print_table(table):
+    print("---------")
+    print("""| {} {} {} |
+| {} {} {} |
+| {} {} {} |""".format(*table))
+    print("---------")
+
+
+# Create list of x and o
+def create_x_o(list_input):
+    x.clear()
+    y.clear()
+    for i in range(len(list_input)):
+        if list_input[i] == 'X':
+            x.append(i)
+        elif list_input[i] == 'O':
+            y.append(i)
+
+
+def game_check_for_win(x, y):
+    global x_win
+    global y_win
+    winning_possitions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+    for i in range(len(winning_possitions)):
+        if len(x) >= 3:
+            if all(elem in x for elem in winning_possitions[i]):
+                x_win = True
+        if len(y) >= 3:
+            if all(elem in y for elem in winning_possitions[i]):
+                y_win = True
+
+
+def game_status(list_input, x_win, y_win):
+    if x_win and y_win:
+        return "Impossible"
+    elif len(x) - len(y) > 1 or len(x) - len(y) < -1:
+        return "Impossible"
+    elif x_win:
+        return "X wins"
+    elif y_win:
+        return "O wins"
+    elif ' ' in list_input:
+        return "Game not finished"
+    elif x_win == False and y_win == False:
+        return "Draw"
+
+
+def make_move(list_input, user_move, ):
+    for i in range(len(game_field)):
+        if user_move[0] == game_field[i][0] and user_move[1] == game_field[i][1]:
+            if list_input[i] == '_':
+                list_input[i] = 'X'
+
+
+def user_move(list_input, game_field):
+    while True:
+        global x_or_o
+        user_input = input("Enter the coordinates: ")
+        user_move = list(map(int, user_input.replace(' ', '')))
+        if user_move[0] not in [1, 2, 3] or user_move[1] not in [1, 2, 3]:
+            print("Coordinates should be from 1 to 3!")
+        elif user_move[0] in [1, 2, 3] and user_move[1] in [1, 2, 3]:
+            for i in range(len(list_input)):
+                if user_move[0] == game_field[i][0] and user_move[1] == game_field[i][1]:
+                    if list_input[i] != ' ':
+                        print("This cell is occupied! Choose another one!")
+                    else:
+                        if x_or_o % 2 == 0:
+                            list_input[i] = 'X'
+                            x_or_o += 1
+                        else:
+                            list_input[i] = 'O'
+                            x_or_o += 1
+                        return list_input
+
+def main():
+    list_input = list(start_input)
+    print_table(list_input)
+    global win_status
+    while win_status != "Draw" and win_status != "X wins" and win_status != "O wins":
+        user_move(list_input, game_field)
+        print_table(list_input)
+        create_x_o(list_input)
+        game_check_for_win(x, y)
+        win_status = game_status(list_input, x_win, y_win)
+    print(win_status)
+
+    # start_input = input("Enter cells: ")
+    # list_input = list(start_input)
+    # print_table(list_input)
+
+    # check_possition(list_input, go)
+
+
+if __name__ == '__main__':
+    main()
